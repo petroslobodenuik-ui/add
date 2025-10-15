@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.sqlite3
+data.db
+*.egg-info/
+
+# VSCode
+.vscode/
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
+
+# pyenv
+.python-version
+
+# pytest cache
+.pytest_cache/
+
+# virtualenv
+.Pipfile.lock
+
+# distribution
+build/
+dist/
