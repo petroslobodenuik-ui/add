@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    image: humanitarian-app:latest
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./:/app:ro
+
+  # optional simple reverse proxy (Caddy) - uncomment if you want automatic HTTPS on a public host
+  # caddy:
+  #   image: caddy:2
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+
+volumes:
+  caddy_data: {}
