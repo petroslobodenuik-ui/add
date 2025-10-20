@@ -3,6 +3,9 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+# Ensure the application package is importable
+ENV PYTHONPATH=/app
+
 RUN groupadd -r app && useradd --no-log-init -r -g app app
 
 WORKDIR /app

@@ -1,15 +1,38 @@
 Deployment guide — Docker + docker-compose
 
-Goal: run the FastAPI humanitarian app as an independent web application on server 10.10.0.4 using Docker.
+Goal: run the FastAPI humanitarian app as an independent web application on server 10.10.0.12 using Docker and Portainer (exposed on host port 1188).
 
-Prerequisites on the server 10.10.0.4:
+Prerequisites on the server 10.10.0.12:
 - Docker installed (https://docs.docker.com/engine/install/)
 - Docker Compose v2 (or use `docker compose` from Docker CLI)
 - SSH access to server
+- Portainer (optional, we include steps to install it)
 
 Two recommended deployment flows:
 
-A) Build & run directly on the server (simpler)
+A) Deploy via Portainer from Git (recommended for ease)
+1. Install Portainer (if not already):
+   ssh user@10.10.0.12
+   docker volume create portainer_data
+   docker run -d -p 9000:9000 -p 8000:8000 --name portainer --restart=always \
+     -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+
+2. Open Portainer UI: http://10.10.0.12:9000 and set admin credentials.
+
+3. Deploy stack from Git repository in Portainer UI:
+   - Environments → Local
+   - Stacks → Add stack → Deploy from a Git repository
+   - Repository URL: https://github.com/petroslobodenuik-ui/project.git
+   - Branch: main
+   - Compose path: / (if `docker-compose.yml` in repo root)
+   - In advanced options, you can enable Build (Portainer will run `docker compose build`)
+   - Deploy the stack
+
+4. Expose the app on port 1188: our `portainer-stack.yml` and `docker-compose.prod.yml` already map container 8000 -> host 1188. Ensure Portainer uses the stack file in the repo root or point to `portainer-stack.yml` as the compose file.
+
+5. Check app: http://10.10.0.12:1188
+
+A2) Build & run directly on the server (manual)
 1. Copy project to server (use scp/rsync or git clone):
    scp -r C:\Users\admin5\Desktop\base user@10.10.0.4:/home/user/project
    # or on server:
@@ -27,7 +50,7 @@ A) Build & run directly on the server (simpler)
    docker compose ps
    docker compose logs -f app
 
-5. The app will be available on port 8000 of the server (http://10.10.0.4:8000). Optionally configure firewall to allow port 8000 or put a reverse proxy in front.
+5. The app will be available on port 1188 of the server (http://10.10.0.12:1188). Optionally configure firewall to allow port 1188 or put a reverse proxy in front.
 
 B) Build image locally, push to registry, pull on server (CI-friendly)
 1. Build locally and push to registry (Docker Hub/GitHub Container Registry):

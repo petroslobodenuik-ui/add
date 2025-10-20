@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  app:
+    # Build from repository (Portainer can build the image from this compose)
+    build: .
+    image: humanitarian-app:latest
+    restart: always
+    ports:
+      - "1188:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
