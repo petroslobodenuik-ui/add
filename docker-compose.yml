@@ -1,14 +1,12 @@
+version: '3.8'
 services:
   app:
-    build: .
-    image: humanitarian-app:latest
+    image: ghcr.io/petroslobodenuik-ui/humanitarian-app:latest
     restart: always
     ports:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
-    volumes:
-      - ./:/app:ro
 
   # optional simple reverse proxy (Caddy) - uncomment if you want automatic HTTPS on a public host
   # caddy:
@@ -23,3 +21,8 @@ services:
 
 volumes:
   caddy_data: {}
+
+# Notes:
+# - This compose file is intended for production/Portainer: it references the image in GHCR.
+# - For local development (build & mount), use the override file `docker-compose.dev.yml`:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
