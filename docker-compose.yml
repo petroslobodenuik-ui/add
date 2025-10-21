@@ -4,10 +4,9 @@ services:
     image: ghcr.io/petroslobodenuik-ui/humanitarian-app:latest
     restart: always
     ports:
-      - "8000:8000"
+      - "8080:8080"
     environment:
       - PYTHONUNBUFFERED=1
-
   # optional simple reverse proxy (Caddy) - uncomment if you want automatic HTTPS on a public host
   # caddy:
   #   image: caddy:2
