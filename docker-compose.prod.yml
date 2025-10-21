@@ -4,6 +4,6 @@ services:
     image: ghcr.io/petroslobodenuik-ui/humanitarian-app:latest
     restart: always
     ports:
-      - "1188:8000"
+      - "8080:8080"
     environment:
       - PYTHONUNBUFFERED=1

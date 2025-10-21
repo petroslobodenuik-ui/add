@@ -8,7 +8,7 @@ set -euo pipefail
 REPO_URL=${1:-https://github.com/petroslobodenuik-ui/project.git}
 BRANCH=${2:-main}
 APP_DIR=${3:-/opt/humanitarian-app}
-APP_PORT=${4:-1188}
+APP_PORT=${4:-8080}
 PORTAINER_PORT=${5:-9000}
 
 echo "Deploying project from ${REPO_URL} (branch ${BRANCH}) to ${APP_DIR}"
@@ -59,14 +59,14 @@ fi
 
 cd "$APP_DIR"
 
-echo "Ensuring production port mapping (host:${APP_PORT} -> container:8000)"
-# create a simple override compose file to publish port 1188
+echo "Ensuring production port mapping (host:${APP_PORT} -> container:8080)"
+# create a simple override compose file to publish the requested port
 cat > docker-compose.prod.yml <<EOF
 version: '3.8'
 services:
   app:
     ports:
-      - "${APP_PORT}:8000"
+      - "${APP_PORT}:8080"
     restart: always
 EOF
 
@@ -77,7 +77,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 echo "Optionally installing Portainer (if not present)"
 if ! docker ps --format '{{.Names}}' | grep -q portainer; then
   docker volume create portainer_data || true
-  docker run -d -p ${PORTAINER_PORT}:9000 -p 8000:8000 --name portainer --restart=always \
+  docker run -d -p ${PORTAINER_PORT}:9000 -p 8080:8080 --name portainer --restart=always \
     -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 fi
 

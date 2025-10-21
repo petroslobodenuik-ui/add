@@ -28,4 +28,4 @@ USER app
 EXPOSE 8080
 
 # Use gunicorn with uvicorn workers for production-like server
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "-b", "0.0.0.0:8000", "app.main:app"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "-b", "0.0.0.0:8080", "app.main:app"]
