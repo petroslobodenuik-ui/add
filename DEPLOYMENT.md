@@ -84,3 +84,32 @@ If хочете, можу:
 - додати `Caddyfile` або `nginx` config, 
 - створити GitHub Actions workflow, що будує і пушить образ у DockerHub/GHCR,
 - або одразу виконати тестовий build локально і запустити `docker compose up` тут (повідомте, якщо це робити).
+
+Automatic CI/CD using GitHub Actions + GHCR + Portainer webhook
+-------------------------------------------------------------
+This repository includes a GitHub Actions workflow `.github/workflows/ci-deploy.yml` that will:
+
+- Build the Docker image using buildx and push it to GitHub Container Registry (GHCR) as `ghcr.io/<owner>/humanitarian-app:latest`.
+- After push, it calls a Portainer webhook URL (if you set it as a repo secret) to instruct Portainer to pull the new image and redeploy the stack.
+
+Required setup steps in your GitHub repository settings:
+
+1. Create a Personal Access Token (PAT) with `write:packages` (or `packages:write`) scope. Store it in the repository secrets as `GHCR_PAT`.
+
+2. Create a Portainer webhook to update the stack:
+   - In Portainer UI → Stacks → choose your stack → Scroll to "Webhooks" or use the stack actions to create an endpoint.
+   - Create a webhook that will trigger a "Redeploy stack" action. Copy the full webhook URL.
+   - Add the webhook URL as a GitHub repository secret named `PORTAINER_WEBHOOK_URL`.
+
+3. Optional: if your Portainer uses authentication or runs behind a proxy, ensure the webhook URL is reachable from GitHub Actions runners.
+
+How the workflow works:
+
+- On push to `main`, GitHub Actions builds and pushes the image to GHCR using `GHCR_PAT`.
+- The workflow then POSTs the `PORTAINER_WEBHOOK_URL` so Portainer will pull the new image and restart the stack.
+
+Portainer stack configuration note:
+- Use `portainer-stack.yml` or `docker-compose.prod.yml` which now reference the GHCR image `ghcr.io/petroslobodenuik-ui/humanitarian-app:latest`.
+- In Portainer, create/update the stack to use the `ghcr.io/.../humanitarian-app:latest` image and **disable** the build-from-Git option to avoid remote build errors.
+
+If webhook redeploy does not update the stack, another approach is to use a small runner on the server that pulls the image and restarts the stack via `docker compose pull && docker compose up -d` — I can provide a systemd unit and small script for that if you'd prefer.
